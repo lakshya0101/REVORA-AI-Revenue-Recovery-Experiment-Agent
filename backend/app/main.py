@@ -33,3 +33,10 @@ def health_check():
     return {
         "status": "healthy",
     }
+
+
+# Include Routers
+from app.routes.razorpay import router as razorpay_router
+
+app.include_router(razorpay_router)
+
