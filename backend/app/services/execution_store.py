@@ -14,6 +14,10 @@ class RecoveryExecutionRecord(Base):
     strategy = Column(String(32), nullable=False)
     status = Column(String(32), nullable=False)  # EXECUTED, SKIPPED, FAILED
     mode = Column(String(32), nullable=False)    # RAZORPAY_TEST, SIMULATED, NO_ACTION
+    strategy_confidence = Column(Float, nullable=True)
+    predicted_recovery_probability = Column(Float, nullable=True)
+    expected_recovery_value = Column(Float, nullable=True)
+    reason_codes_json = Column(Text, nullable=True)
     razorpay_resource_id = Column(String(64), nullable=True)
     short_url = Column(String(256), nullable=True)
     amount = Column(Float, nullable=False)
@@ -43,19 +47,30 @@ class ExecutionStore:
             )
             if not record:
                 return None
+            
+            audit_obj = json.loads(record.audit_data) if record.audit_data else {}
+            reason_codes = json.loads(record.reason_codes_json) if record.reason_codes_json else audit_obj.get("reason_codes", [])
+            conf = record.strategy_confidence if record.strategy_confidence is not None else audit_obj.get("confidence", 0.0)
+            prob = record.predicted_recovery_probability if record.predicted_recovery_probability is not None else audit_obj.get("predicted_recovery_probability", 0.0)
+            exp_val = record.expected_recovery_value if record.expected_recovery_value is not None else audit_obj.get("expected_recovery_value", 0.0)
+
             return {
                 "execution_id": record.execution_id,
                 "transaction_id": record.transaction_id,
                 "strategy": record.strategy,
                 "status": record.status,
                 "mode": record.mode,
+                "strategy_confidence": conf,
+                "predicted_recovery_probability": prob,
+                "expected_recovery_value": exp_val,
+                "reason_codes": reason_codes,
                 "razorpay_resource_id": record.razorpay_resource_id,
                 "short_url": record.short_url,
                 "amount": record.amount,
                 "policy_result": record.policy_result,
                 "error_message": record.error_message,
                 "created_at": record.created_at.isoformat() if record.created_at else None,
-                "audit_data": json.loads(record.audit_data) if record.audit_data else {},
+                "audit_data": audit_obj,
             }
         finally:
             db.close()
@@ -66,12 +81,17 @@ class ExecutionStore:
         db = SessionLocal()
         try:
             audit_json = json.dumps(data.get("audit_data", {}))
+            reason_codes = data.get("reason_codes", data.get("audit_data", {}).get("reason_codes", []))
             record = RecoveryExecutionRecord(
                 execution_id=data["execution_id"],
                 transaction_id=data["transaction_id"],
                 strategy=data["strategy"],
                 status=data["status"],
                 mode=data["mode"],
+                strategy_confidence=float(data.get("strategy_confidence", data.get("audit_data", {}).get("confidence", 0.0))),
+                predicted_recovery_probability=float(data.get("predicted_recovery_probability", data.get("audit_data", {}).get("predicted_recovery_probability", 0.0))),
+                expected_recovery_value=float(data.get("expected_recovery_value", data.get("audit_data", {}).get("expected_recovery_value", 0.0))),
+                reason_codes_json=json.dumps(reason_codes),
                 razorpay_resource_id=data.get("razorpay_resource_id"),
                 short_url=data.get("short_url"),
                 amount=float(data.get("amount", 0.0)),

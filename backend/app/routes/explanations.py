@@ -17,7 +17,7 @@ class WhyNotRequest(BaseModel):
 
 
 def _load_and_evaluate_transaction(transaction_id: str) -> Dict[str, Any]:
-    """Helper to retrieve transaction and compute ML decision & policy context."""
+    """Helper to retrieve transaction and compute or retrieve ML decision & policy context."""
     cases = dataset_service.load_dataset()
     matched = next((c for c in cases if c["transaction_id"] == transaction_id), None)
     if not matched:
@@ -27,21 +27,33 @@ def _load_and_evaluate_transaction(transaction_id: str) -> Dict[str, Any]:
         )
 
     safe_txn = {k: v for k, v in matched.items() if not k.startswith("ground_truth_")}
-    decision = recovery_engine.predict(safe_txn)
-    final_strat, pol_res, block_reasons = default_policy.evaluate_guardrails(
-        safe_txn, decision["recommended_strategy"], decision["predicted_recovery_probability"]
-    )
+    existing_exec = execution_store.get_by_transaction_id(transaction_id)
 
-    reason_codes = list(decision.get("reason_codes", []))
-    if block_reasons:
-        reason_codes.extend(block_reasons)
+    if existing_exec and existing_exec.get("strategy_confidence"):
+        final_strat = existing_exec["strategy"]
+        confidence = existing_exec["strategy_confidence"]
+        pred_prob = existing_exec["predicted_recovery_probability"]
+        exp_val = existing_exec["expected_recovery_value"]
+        pol_res = existing_exec["policy_result"]
+        reason_codes = existing_exec.get("reason_codes", [])
+    else:
+        decision = recovery_engine.predict(safe_txn)
+        final_strat, pol_res, block_reasons = default_policy.evaluate_guardrails(
+            safe_txn, decision["recommended_strategy"], decision["predicted_recovery_probability"]
+        )
+        confidence = decision["strategy_confidence"]
+        pred_prob = decision["predicted_recovery_probability"]
+        exp_val = decision["expected_recovery_value"]
+        reason_codes = list(decision.get("reason_codes", []))
+        if block_reasons:
+            reason_codes.extend(block_reasons)
 
     context = {
         **safe_txn,
         "recommended_strategy": final_strat,
-        "strategy_confidence": decision["strategy_confidence"],
-        "predicted_recovery_probability": decision["predicted_recovery_probability"],
-        "expected_recovery_value": decision["expected_recovery_value"],
+        "strategy_confidence": confidence,
+        "predicted_recovery_probability": pred_prob,
+        "expected_recovery_value": exp_val,
         "policy_result": pol_res,
         "reason_codes": reason_codes,
     }

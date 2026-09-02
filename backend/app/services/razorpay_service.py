@@ -74,5 +74,33 @@ class RazorpayService:
                 "orders_count": 0,
             }
 
+    def get_payment_link_status(self, payment_link_id: str) -> Dict[str, Any]:
+        """Fetch status of an existing Razorpay Payment Link in Test Mode. Safe READ-ONLY operation."""
+        client = self.get_client()
+        if not client:
+            return {
+                "success": False,
+                "error": "Razorpay client not configured",
+            }
+
+        try:
+            link = client.payment_link.fetch(payment_link_id)
+            return {
+                "success": True,
+                "payment_link_id": link.get("id"),
+                "status": link.get("status"),  # created, paid, partially_paid, expired, cancelled
+                "amount": float(link.get("amount", 0)) / 100.0,
+                "amount_paid": float(link.get("amount_paid", 0)) / 100.0,
+                "reference_id": link.get("reference_id"),
+                "short_url": link.get("short_url"),
+            }
+        except Exception as e:
+            logger.error("Failed to fetch Razorpay Payment Link status: %s", type(e).__name__)
+            return {
+                "success": False,
+                "error": f"Failed to retrieve payment link: {type(e).__name__}",
+                "payment_link_id": payment_link_id,
+            }
+
 
 razorpay_service = RazorpayService()

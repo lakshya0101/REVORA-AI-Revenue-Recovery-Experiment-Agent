@@ -42,6 +42,8 @@ from app.routes.recovery import router as recovery_router
 from app.routes.experiments import router as experiments_router
 from app.routes.execution import router as execution_router
 from app.routes.explanations import router as explanations_router
+from app.routes.outcomes import router as outcomes_router
+from app.routes.learning import router as learning_router
 
 app.include_router(razorpay_router)
 app.include_router(dataset_router)
@@ -49,6 +51,9 @@ app.include_router(recovery_router)
 app.include_router(experiments_router)
 app.include_router(execution_router)
 app.include_router(explanations_router)
+app.include_router(outcomes_router)
+app.include_router(learning_router)
+
 
 
 
