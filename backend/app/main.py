@@ -39,10 +39,13 @@ def health_check():
 from app.routes.razorpay import router as razorpay_router
 from app.routes.dataset import router as dataset_router
 from app.routes.recovery import router as recovery_router
+from app.routes.experiments import router as experiments_router
 
 app.include_router(razorpay_router)
 app.include_router(dataset_router)
 app.include_router(recovery_router)
+app.include_router(experiments_router)
+
 
 
 

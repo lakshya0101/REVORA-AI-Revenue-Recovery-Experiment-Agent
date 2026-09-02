@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 from app.agents.recovery_decision_engine import recovery_engine
 from app.models.recovery import DecisionOutput, TransactionInput
 from app.services.dataset_service import dataset_service
+from app.services.experiment_engine import experiment_engine
 
 router = APIRouter(prefix="/api/recovery", tags=["Recovery Engine"])
 
@@ -42,3 +43,14 @@ def predict_transaction(transaction: TransactionInput):
 
     decision = recovery_engine.predict(payload)
     return decision
+
+
+@router.post("/evaluate-options")
+def evaluate_options(transaction: TransactionInput):
+    """Evaluate all 4 recovery options with counterfactuals and return recommended strategy with guardrails."""
+    payload = transaction.model_dump()
+    if not payload.get("order_value_segment"):
+        from app.services.synthetic_data_generator import determine_value_segment
+        payload["order_value_segment"] = determine_value_segment(payload["amount"])
+
+    return experiment_engine.evaluate_strategy_options(payload)
