@@ -11,24 +11,24 @@ def run_tests_and_evaluation():
     # 1. Dataset loading verification
     cases = dataset_service.load_dataset()
     assert len(cases) == 1000, f"Expected 1000 cases, got {len(cases)}"
-    print(f"✓ Dataset verified: {len(cases)} records loaded.")
+    print(f"[PASS] Dataset verified: {len(cases)} records loaded.")
 
     # 2. Features check (Ensure NO ground truth columns are present in FEATURE_COLUMNS)
     for f in FEATURE_COLUMNS:
         assert not f.startswith("ground_truth_"), f"Ground truth feature leaked: {f}"
-    print(f"✓ Feature isolation verified: {len(FEATURE_COLUMNS)} sanitized features used.")
+    print(f"[PASS] Feature isolation verified: {len(FEATURE_COLUMNS)} sanitized features used.")
 
     # 3. Train & Evaluate
     eval_res = recovery_engine.train_and_evaluate()
     assert eval_res["model"]["train_size"] == 800
     assert eval_res["model"]["test_size"] == 200
-    print("✓ Train/Test split verified: 800 train (80%), 200 test (20%).")
+    print("[PASS] Train/Test split verified: 800 train (80%), 200 test (20%).")
 
     # 4. Check Metrics
     model_acc = eval_res["model"]["accuracy"]
     baseline_acc = eval_res["baseline"]["accuracy"]
     improvement = eval_res["improvement"]
-    print(f"✓ Model Accuracy: {model_acc*100:.2f}% | Baseline Accuracy: {baseline_acc*100:.2f}% | Improvement: {improvement*100:.2f}%")
+    print(f"[PASS] Model Accuracy: {model_acc*100:.2f}% | Baseline Accuracy: {baseline_acc*100:.2f}% | Improvement: {improvement*100:.2f}%")
 
     # 5. Prediction Verification
     sample_case = cases[0]
@@ -41,7 +41,7 @@ def run_tests_and_evaluation():
     assert decision["expected_recovery_value"] >= 0.0
     assert len(decision["reason_codes"]) > 0
 
-    print("✓ Single Prediction verified:")
+    print("[PASS] Single Prediction verified:")
     print(json.dumps(decision, indent=2))
     print("\nFull Evaluation Summary:")
     print(json.dumps(eval_res, indent=2))

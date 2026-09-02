@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     RAZORPAY_KEY_ID: str = ""
     RAZORPAY_KEY_SECRET: str = ""
 
+    # LLM Explanation Agent Configuration
+    LLM_PROVIDER: str = "deterministic"
+    LLM_API_KEY: str = ""
+    LLM_MODEL: str = "gemini-1.5-flash"
+
     @property
     def razorpay_key_id(self) -> str:
         """Expose lowercase razorpay_key_id without hardcoding."""
