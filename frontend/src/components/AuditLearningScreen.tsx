@@ -250,6 +250,62 @@ export const AuditLearningScreen: React.FC<AuditLearningScreenProps> = ({
 
           {analysis ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {/* Visual 3: Compact Prediction vs Observed Yield Bar Comparison */}
+              <div
+                style={{
+                  background: '#040812',
+                  border: '1px solid var(--border-cyan)',
+                  borderRadius: '8px',
+                  padding: '16px 18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                    PREDICTION VS OBSERVED CALIBRATION
+                  </span>
+                  <span className="badge badge-emerald" style={{ fontSize: '9px' }}>
+                    CLOSED-LOOP FEEDBACK
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {/* Predicted Yield Bar */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', fontSize: '11px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="badge badge-cyan" style={{ fontSize: '8.5px', padding: '1px 5px' }}>PREDICTIVE</span>
+                        <span style={{ color: 'var(--text-secondary)' }}>Expected Recovery ({(analysis.analysis.predicted_probability * 100).toFixed(1)}%)</span>
+                      </div>
+                      <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--cyan-bright)' }}>
+                        {formatCurrency(analysis.prediction.expected_recovery_value)}
+                      </strong>
+                    </div>
+                    <div style={{ height: '6px', background: '#0b1324', borderRadius: '3px', overflow: 'hidden', border: '1px solid rgba(0, 210, 255, 0.2)' }}>
+                      <div style={{ width: `${Math.min(100, (analysis.prediction.expected_recovery_value / Math.max(analysis.prediction.expected_recovery_value, analysis.actual.actual_recovered_amount, 1)) * 100)}%`, height: '100%', background: 'var(--cyan-primary)', borderRadius: '3px' }} />
+                    </div>
+                  </div>
+
+                  {/* Observed Yield Bar */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', fontSize: '11px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="badge badge-amber" style={{ fontSize: '8.5px', padding: '1px 5px' }}>OBSERVED · SIMULATED</span>
+                        <span style={{ color: 'var(--text-secondary)' }}>Observed Yield ({analysis.actual.outcome_status})</span>
+                      </div>
+                      <strong style={{ fontFamily: 'var(--font-mono)', color: analysis.actual.actual_recovered_amount > 0 ? 'var(--emerald-bright)' : 'var(--crimson-bright)' }}>
+                        {formatCurrency(analysis.actual.actual_recovered_amount)}
+                      </strong>
+                    </div>
+                    <div style={{ height: '6px', background: '#0b1324', borderRadius: '3px', overflow: 'hidden', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                      <div style={{ width: `${Math.min(100, (analysis.actual.actual_recovered_amount / Math.max(analysis.prediction.expected_recovery_value, analysis.actual.actual_recovered_amount, 1)) * 100)}%`, height: '100%', background: analysis.actual.actual_recovered_amount > 0 ? 'var(--emerald-primary)' : 'var(--crimson-primary)', borderRadius: '3px' }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div style={{ background: '#050a14', padding: '14px', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
                   <div style={{ color: 'var(--text-muted)', fontSize: '10px', textTransform: 'uppercase', fontWeight: '800', fontFamily: 'var(--font-mono)' }}>Original ML Prediction</div>

@@ -314,59 +314,113 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
         </div>
       </div>
 
-      {/* Model Performance Lift Monument (Comparison Table) */}
+      {/* Model Performance Lift Monument (2-Bar Visual Comparison + Evaluation Matrix) */}
       <div className="os-card">
         <div className="os-card-title">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <TrendingUp size={16} color="var(--emerald-primary)" />
-            <span>MODEL ACCURACY IMPROVEMENT // HELD-OUT TEST SET</span>
+            <span>DECISION ENGINE PERFORMANCE // COUNTERFACTUAL BENCHMARK</span>
           </div>
           <span className="badge badge-emerald">HELD-OUT EVALUATION</span>
         </div>
 
-        <div style={{ marginTop: '16px' }}>
-          <table>
-            <thead>
-              <tr>
-                <th>Evaluation Dimension</th>
-                <th>Static Baseline (Always Payment Link)</th>
-                <th>REVORA AI Decision Engine</th>
-                <th>Strategy Accuracy Improvement</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Strategy Accuracy</strong></td>
-                <td style={{ fontFamily: 'var(--font-mono)' }}>45.00%</td>
-                <td style={{ color: 'var(--emerald-bright)', fontWeight: '800', fontFamily: 'var(--font-mono)', fontSize: '14px' }}>
-                  89.00%
-                </td>
-                <td>
-                  <span className="badge badge-emerald">+44 pp Strategy Accuracy</span>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Macro F1-Score</strong></td>
-                <td style={{ fontFamily: 'var(--font-mono)' }}>0.2840</td>
-                <td style={{ color: 'var(--cyan-bright)', fontWeight: '800', fontFamily: 'var(--font-mono)', fontSize: '14px' }}>
-                  {evalMetrics?.model.f1_macro.toFixed(4) || '0.8820'}
-                </td>
-                <td>
-                  <span className="badge badge-cyan">+0.5980 F1 Score Lift</span>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Probability Calibration (MAE)</strong></td>
-                <td style={{ fontFamily: 'var(--font-mono)' }}>0.3120</td>
-                <td style={{ color: '#ffffff', fontWeight: '800', fontFamily: 'var(--font-mono)', fontSize: '14px' }}>
-                  {evalMetrics?.recovery_probability.mae.toFixed(4) || '0.0946'}
-                </td>
-                <td>
-                  <span className="badge badge-emerald">-69.6% Error Reduction</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.35fr', gap: '24px', marginTop: '16px', alignItems: 'center' }}>
+          {/* Visual 1: Compact 2-Bar Comparison */}
+          <div
+            style={{
+              background: '#040812',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '8px',
+              padding: '18px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                STRATEGY SELECTION ACCURACY
+              </span>
+              <span className="badge badge-cyan" style={{ fontSize: '9px' }}>
+                COUNTERFACTUAL SIMULATION
+              </span>
+            </div>
+
+            {/* Bar 1: Baseline */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', fontSize: '11.5px' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Static Baseline (Always Payment Link)</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '700', color: '#94a3b8' }}>45.00%</span>
+              </div>
+              <div style={{ height: '8px', background: '#0b1324', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.03)' }}>
+                <div style={{ width: '45%', height: '100%', background: '#64748b', borderRadius: '4px' }} />
+              </div>
+            </div>
+
+            {/* Bar 2: REVORA */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', fontSize: '11.5px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <strong style={{ color: '#fff' }}>REVORA AI Decision Engine</strong>
+                  <span className="badge badge-emerald" style={{ fontSize: '9px', padding: '1px 5px' }}>+44 pp LIFT</span>
+                </div>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: 'var(--emerald-bright)' }}>89.00%</span>
+              </div>
+              <div style={{ height: '8px', background: '#0b1324', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                <div style={{ width: '89%', height: '100%', background: 'linear-gradient(90deg, #059669 0%, #10b981 100%)', borderRadius: '4px', boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)' }} />
+              </div>
+            </div>
+
+            <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', lineHeight: '1.4', borderTop: '1px solid var(--border-subtle)', paddingTop: '10px' }}>
+              * Pre-execution evaluation on 1,000 synthetic held-out cases. Not confirmed production revenue.
+            </div>
+          </div>
+
+          {/* Table / Evaluation Matrix */}
+          <div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Evaluation Metric</th>
+                  <th>Baseline</th>
+                  <th>REVORA AI</th>
+                  <th>Impact</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Strategy Accuracy</strong></td>
+                  <td style={{ fontFamily: 'var(--font-mono)' }}>45.00%</td>
+                  <td style={{ color: 'var(--emerald-bright)', fontWeight: '800', fontFamily: 'var(--font-mono)', fontSize: '13px' }}>
+                    89.00%
+                  </td>
+                  <td>
+                    <span className="badge badge-emerald">+44 pp Lift</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Macro F1-Score</strong></td>
+                  <td style={{ fontFamily: 'var(--font-mono)' }}>0.2840</td>
+                  <td style={{ color: 'var(--cyan-bright)', fontWeight: '800', fontFamily: 'var(--font-mono)', fontSize: '13px' }}>
+                    {evalMetrics?.model.f1_macro.toFixed(4) || '0.8820'}
+                  </td>
+                  <td>
+                    <span className="badge badge-cyan">+0.5980 F1</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Calibration Error (MAE)</strong></td>
+                  <td style={{ fontFamily: 'var(--font-mono)' }}>0.3120</td>
+                  <td style={{ color: '#ffffff', fontWeight: '800', fontFamily: 'var(--font-mono)', fontSize: '13px' }}>
+                    {evalMetrics?.recovery_probability.mae.toFixed(4) || '0.0946'}
+                  </td>
+                  <td>
+                    <span className="badge badge-emerald">-69.6% MAE</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play } from 'lucide-react';
+import { Play, Layers } from 'lucide-react';
 import { api } from '../api/client';
 import type { ExperimentRecord } from '../types';
 
@@ -189,40 +189,122 @@ export const ExperimentsScreen: React.FC<ExperimentsScreenProps> = ({
         </div>
       ) : null}
 
-      {/* Per Strategy Matrix */}
+      {/* Visual 2: Strategy Distribution Chart & Counterfactual Performance Table */}
       {selectedExp && selectedExp.strategy_performance && (
-        <div className="os-card">
-          <div className="os-card-title" style={{ marginBottom: '16px' }}>
-            <span>PER-STRATEGY COUNTERFACTUAL BREAKDOWN</span>
-            <span className="badge badge-cyan">{selectedExp.sample_size} Case Cohort</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+          {/* Strategy Distribution Horizontal Bar Chart */}
+          <div className="os-card">
+            <div className="os-card-title">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Layers size={15} color="var(--cyan-primary)" />
+                <span>EXPERIMENT STRATEGY DISTRIBUTION // {selectedExp.sample_size} COHORT CASES</span>
+              </div>
+              <span className="badge badge-amber">COUNTERFACTUAL SIMULATION</span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginTop: '16px' }}>
+              {Object.entries(selectedExp.strategy_performance).map(([strat, metrics]) => {
+                const pct = selectedExp.sample_size > 0 ? (metrics.cases / selectedExp.sample_size) * 100 : 0;
+                let barColor = 'var(--cyan-primary)';
+                let pillClass = 'strategy-payment-link';
+                let rationale = 'Async salvage';
+
+                if (strat === 'RETRY') {
+                  barColor = 'var(--emerald-primary)';
+                  pillClass = 'strategy-retry';
+                  rationale = 'Auto-resubmit';
+                } else if (strat === 'ALTERNATE_FLOW') {
+                  barColor = 'var(--amber-primary)';
+                  pillClass = 'strategy-alternate-flow';
+                  rationale = 'Method switch';
+                } else if (strat === 'NO_ACTION') {
+                  barColor = '#64748b';
+                  pillClass = 'strategy-no-action';
+                  rationale = 'Zero friction';
+                }
+
+                return (
+                  <div
+                    key={strat}
+                    style={{
+                      background: '#040812',
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: '8px',
+                      padding: '14px 16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: '10px',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <span className={`strategy-pill ${pillClass}`} style={{ fontSize: '10.5px', padding: '2px 8px' }}>
+                          {strat}
+                        </span>
+                        <span style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                          {rationale}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '4px' }}>
+                        <span style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'var(--font-mono)', color: '#ffffff' }}>
+                          {metrics.cases} <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '400' }}>cases</span>
+                        </span>
+                        <span style={{ fontSize: '13px', fontWeight: '800', fontFamily: 'var(--font-mono)', color: barColor }}>
+                          {pct.toFixed(1)}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ height: '6px', background: '#0b1324', borderRadius: '3px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.03)', marginBottom: '6px' }}>
+                        <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: '3px' }} />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10.5px', color: 'var(--text-secondary)' }}>
+                        <span>At Risk: {formatCurrency(metrics.total_amount)}</span>
+                        <span style={{ color: 'var(--emerald-bright)' }}>Yield: {formatPercent(metrics.recovery_rate)}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <table>
-            <thead>
-              <tr>
-                <th>Strategy</th>
-                <th>Selected Cases</th>
-                <th>Total Value at Risk</th>
-                <th>Expected Recovery</th>
-                <th>Simulated Recovered</th>
-                <th>Strategy Recovery Rate</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(selectedExp.strategy_performance).map(([strat, metrics]) => (
-                <tr key={strat}>
-                  <td><strong style={{ fontFamily: 'var(--font-mono)' }}>{strat}</strong></td>
-                  <td style={{ fontFamily: 'var(--font-mono)' }}>{metrics.cases}</td>
-                  <td style={{ fontFamily: 'var(--font-mono)' }}>{formatCurrency(metrics.total_amount)}</td>
-                  <td style={{ color: 'var(--cyan-bright)', fontFamily: 'var(--font-mono)' }}>{formatCurrency(metrics.expected_recovery)}</td>
-                  <td style={{ color: 'var(--emerald-bright)', fontWeight: '800', fontFamily: 'var(--font-mono)' }}>
-                    {formatCurrency(metrics.simulated_recovered_amount)}
-                  </td>
-                  <td><strong style={{ fontFamily: 'var(--font-mono)' }}>{formatPercent(metrics.recovery_rate)}</strong></td>
+          {/* Table Breakdown */}
+          <div className="os-card">
+            <div className="os-card-title" style={{ marginBottom: '16px' }}>
+              <span>PER-STRATEGY COUNTERFACTUAL BREAKDOWN</span>
+              <span className="badge badge-cyan">{selectedExp.sample_size} Case Cohort</span>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Strategy</th>
+                  <th>Selected Cases</th>
+                  <th>Total Value at Risk</th>
+                  <th>Expected Recovery</th>
+                  <th>Simulated Recovered</th>
+                  <th>Strategy Recovery Rate</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {Object.entries(selectedExp.strategy_performance).map(([strat, metrics]) => (
+                  <tr key={strat}>
+                    <td><strong style={{ fontFamily: 'var(--font-mono)' }}>{strat}</strong></td>
+                    <td style={{ fontFamily: 'var(--font-mono)' }}>{metrics.cases}</td>
+                    <td style={{ fontFamily: 'var(--font-mono)' }}>{formatCurrency(metrics.total_amount)}</td>
+                    <td style={{ color: 'var(--cyan-bright)', fontFamily: 'var(--font-mono)' }}>{formatCurrency(metrics.expected_recovery)}</td>
+                    <td style={{ color: 'var(--emerald-bright)', fontWeight: '800', fontFamily: 'var(--font-mono)' }}>
+                      {formatCurrency(metrics.simulated_recovered_amount)}
+                    </td>
+                    <td><strong style={{ fontFamily: 'var(--font-mono)' }}>{formatPercent(metrics.recovery_rate)}</strong></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
