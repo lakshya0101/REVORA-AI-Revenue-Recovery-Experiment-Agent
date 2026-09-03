@@ -176,8 +176,8 @@ export const App: React.FC = () => {
               Razorpay AI Buildathon 2026
             </span>
             <span style={{ color: 'var(--border-subtle)' }}>/</span>
-            <span className="badge badge-neutral" style={{ fontSize: '9.5px' }}>
-              TEST ENVIRONMENT
+            <span className="badge badge-amber" style={{ fontSize: '9.5px' }}>
+              RAZORPAY TEST MODE · SIMULATION
             </span>
           </div>
 

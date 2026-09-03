@@ -581,6 +581,50 @@ html, body {
   cursor: not-allowed;
 }
 
+/* Reasoning Tabs System */
+.reasoning-tab-strip {
+  display: flex;
+  gap: 6px;
+  background: #040813;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.reasoning-tab {
+  padding: 7px 13px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.reasoning-tab:hover:not(.active) {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.reasoning-tab.active {
+  color: #ffffff;
+  background: rgba(0, 210, 255, 0.12);
+  border-color: var(--cyan-primary);
+  box-shadow: 0 0 16px rgba(0, 210, 255, 0.18);
+  border-bottom: 2px solid var(--cyan-bright);
+}
+
+/* Sentry Glow */
+.sentry-border-glow {
+  border: 1px solid var(--border-emerald);
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.18);
+}
+
+
 /* ============================================================
    SIGNATURE FINANCIAL RECOVERY INSTRUMENT
    ============================================================ */

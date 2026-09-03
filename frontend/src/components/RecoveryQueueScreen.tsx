@@ -109,8 +109,10 @@ export const RecoveryQueueScreen: React.FC<RecoveryQueueScreenProps> = ({
 
     // Status Filter (conceptually separate)
     const isExecuted = executedTxnIds.has(item.transaction_id);
+    const isBlockedOrFailed = item.policy === 'POLICY_BLOCKED';
     if (statusFilter === 'EXECUTED' && !isExecuted) return false;
-    if (statusFilter === 'PENDING' && isExecuted) return false;
+    if (statusFilter === 'PENDING' && (isExecuted || isBlockedOrFailed)) return false;
+    if (statusFilter === 'FAILED' && !isBlockedOrFailed) return false;
 
     return true;
   });
@@ -141,58 +143,75 @@ export const RecoveryQueueScreen: React.FC<RecoveryQueueScreenProps> = ({
           </p>
         </div>
 
-        {/* Filter controls & Search */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="text"
-              placeholder="Search ID or reason..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{
-                background: '#070d1e',
-                border: '1px solid var(--border-medium)',
-                borderRadius: '7px',
-                padding: '7px 12px 7px 32px',
-                fontSize: '12px',
-                color: 'var(--text-primary)',
-                fontFamily: 'var(--font-mono)',
-                outline: 'none',
-                width: '180px',
-              }}
-            />
-            <Search size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '9px' }} />
-          </div>
+        {/* Search */}
+        <div style={{ position: 'relative' }}>
+          <input
+            type="text"
+            placeholder="Search ID or reason..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              background: '#070d1e',
+              border: '1px solid var(--border-medium)',
+              borderRadius: '7px',
+              padding: '7px 12px 7px 32px',
+              fontSize: '12px',
+              color: 'var(--text-primary)',
+              fontFamily: 'var(--font-mono)',
+              outline: 'none',
+              width: '200px',
+            }}
+          />
+          <Search size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '9px' }} />
+        </div>
+      </div>
 
-          {/* Strategy Filters */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', fontFamily: 'var(--font-mono)' }}>STRATEGY:</span>
-            {['ALL', 'PAYMENT_LINK', 'RETRY', 'ALTERNATE_FLOW', 'NO_ACTION'].map((f) => (
-              <button
-                key={f}
-                className={`btn ${strategyFilter === f ? 'btn-outline-cyan' : 'btn-secondary'}`}
-                style={{ fontSize: '10.5px', padding: '5px 10px' }}
-                onClick={() => setStrategyFilter(f)}
-              >
-                {f === 'ALTERNATE_FLOW' ? 'ALT_FLOW' : f}
-              </button>
-            ))}
-          </div>
+      {/* Two-Dimensional Filter Control Bar */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          background: '#050a14',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: '8px',
+          padding: '12px 18px',
+          flexWrap: 'wrap',
+          gap: '16px',
+        }}
+      >
+        {/* Dimension 1: Filter By Strategy */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '10px', color: 'var(--cyan-bright)', fontWeight: '800', letterSpacing: '0.08em', fontFamily: 'var(--font-mono)' }}>
+            FILTER BY STRATEGY:
+          </span>
+          {['ALL', 'PAYMENT_LINK', 'RETRY', 'ALTERNATE_FLOW', 'NO_ACTION'].map((f) => (
+            <button
+              key={f}
+              className={`btn ${strategyFilter === f ? 'btn-outline-cyan' : 'btn-secondary'}`}
+              style={{ fontSize: '10.5px', padding: '5px 10px' }}
+              onClick={() => setStrategyFilter(f)}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
 
-          {/* Status Filters (Separate from strategy) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', borderLeft: '1px solid var(--border-subtle)', paddingLeft: '8px' }}>
-            <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', fontFamily: 'var(--font-mono)' }}>STATUS:</span>
-            {['ALL', 'PENDING', 'EXECUTED'].map((s) => (
-              <button
-                key={s}
-                className={`btn ${statusFilter === s ? 'btn-outline-cyan' : 'btn-secondary'}`}
-                style={{ fontSize: '10.5px', padding: '5px 9px' }}
-                onClick={() => setStatusFilter(s)}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+        {/* Dimension 2: Filter By Execution Status */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderLeft: '1px solid var(--border-medium)', paddingLeft: '16px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '10px', color: 'var(--emerald-bright)', fontWeight: '800', letterSpacing: '0.08em', fontFamily: 'var(--font-mono)' }}>
+            FILTER BY EXECUTION STATUS:
+          </span>
+          {['ALL', 'PENDING', 'EXECUTED', 'FAILED'].map((s) => (
+            <button
+              key={s}
+              className={`btn ${statusFilter === s ? 'btn-outline-cyan' : 'btn-secondary'}`}
+              style={{ fontSize: '10.5px', padding: '5px 10px' }}
+              onClick={() => setStatusFilter(s)}
+            >
+              {s}
+            </button>
+          ))}
         </div>
       </div>
 

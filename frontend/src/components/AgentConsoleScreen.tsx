@@ -309,7 +309,7 @@ export const AgentConsoleScreen: React.FC<AgentConsoleScreenProps> = ({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
           <span style={{ fontSize: '9.5px', color: 'var(--emerald-bright)', fontWeight: '800', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>STAGE 3</span>
           <span style={{ fontWeight: '800', color: 'var(--emerald-bright)' }}>POLICY SENTRY GATE</span>
-          <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>✓ ALLOWED (Under 100k)</span>
+          <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>✓ POLICY: ALLOWED</span>
         </div>
 
         <ArrowRight size={14} color="var(--text-dim)" />
@@ -328,10 +328,15 @@ export const AgentConsoleScreen: React.FC<AgentConsoleScreenProps> = ({
         {/* Left Column: Transaction Context & Signals */}
         <div className="os-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="os-card-title">
-            <span>Transaction Context</span>
-            <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--cyan-bright)' }}>
-              {transactionId}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="badge badge-cyan" style={{ fontSize: '9px' }}>
+                CANONICAL TRANSACTION
+              </span>
+              <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--cyan-bright)' }}>
+                {transactionId}
+              </span>
+            </div>
+            <span className="badge badge-neutral">TXN REF: #0001</span>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -406,9 +411,9 @@ export const AgentConsoleScreen: React.FC<AgentConsoleScreenProps> = ({
 
           {/* Policy Sentry Checkpoint */}
           <div
+            className="sentry-border-glow"
             style={{
-              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.06) 0%, rgba(9, 16, 33, 0.95) 100%)',
-              border: '1px solid var(--emerald-border)',
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(9, 16, 33, 0.95) 100%)',
               borderRadius: '8px',
               padding: '14px 16px',
               display: 'flex',
@@ -417,17 +422,24 @@ export const AgentConsoleScreen: React.FC<AgentConsoleScreenProps> = ({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Lock size={18} color="var(--emerald-bright)" />
+              <div style={{ padding: '6px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                <Lock size={16} color="var(--emerald-bright)" />
+              </div>
               <div>
-                <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--emerald-bright)', letterSpacing: '0.02em' }}>
-                  POLICY GATE: AUTHORIZED
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--emerald-bright)', letterSpacing: '0.06em', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
+                    POLICY SENTRY GATE
+                  </span>
+                  <span className="badge badge-emerald" style={{ fontSize: '9px', fontWeight: '800' }}>
+                    POLICY: ALLOWED
+                  </span>
                 </div>
-                <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-                  Merchant guardrails passed • ML recommends, Policy authorizes
+                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                  Merchant guardrails passed • Autonomous spend limit verified
                 </div>
               </div>
             </div>
-            <span className="badge badge-emerald">✓ ALLOWED</span>
+            <span className="badge badge-emerald">POLICY: ALLOWED</span>
           </div>
 
           {/* Controlled Action Center */}
@@ -502,13 +514,20 @@ export const AgentConsoleScreen: React.FC<AgentConsoleScreenProps> = ({
                 <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--cyan-bright)', letterSpacing: '0.02em', lineHeight: 1.1 }}>
                   {decision?.recommended_strategy || 'PAYMENT_LINK'}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                    Model Confidence:
-                  </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#ffffff', fontSize: '13px' }}>
-                    {confPercent}%
-                  </span>
+                
+                {/* Model Confidence Box */}
+                <div style={{ marginTop: '12px', background: '#050a14', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontSize: '9.5px', color: 'var(--cyan-bright)', textTransform: 'uppercase', fontWeight: '800', fontFamily: 'var(--font-mono)' }}>
+                    MODEL CONFIDENCE
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '2px' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: '#ffffff', fontSize: '16px' }}>
+                      {confPercent}%
+                    </span>
+                    <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)' }}>
+                      Confidence in strategy selection
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -543,15 +562,18 @@ export const AgentConsoleScreen: React.FC<AgentConsoleScreenProps> = ({
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                  <div style={{ fontSize: '9.5px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '800', letterSpacing: '0.08em', fontFamily: 'var(--font-mono)' }}>
-                    RECOVERY PROBABILITY ({probExact})
+                  <div style={{ fontSize: '9.5px', color: 'var(--emerald-bright)', textTransform: 'uppercase', fontWeight: '800', letterSpacing: '0.08em', fontFamily: 'var(--font-mono)' }}>
+                    PREDICTED RECOVERY PROBABILITY
                   </div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: 'var(--cyan-bright)', fontFamily: 'var(--font-mono)' }}>
-                    ₹{expectedVal}
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: 'var(--emerald-bright)', fontFamily: 'var(--font-mono)' }}>
+                    {probExact}
                   </div>
-                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span className="badge badge-cyan" style={{ fontSize: '8.5px', padding: '1px 5px' }}>PREDICTIVE</span>
-                    <span>Expected recovery yield</span>
+                  <div style={{ fontSize: '10.5px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px' }}>
+                    <span>Expected Recovery:</span>
+                    <strong style={{ color: 'var(--cyan-bright)', fontFamily: 'var(--font-mono)' }}>₹{expectedVal}</strong>
+                  </div>
+                  <div style={{ fontSize: '9.5px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px' }}>
+                    Pre-execution estimate
                   </div>
                 </div>
               </div>
@@ -698,32 +720,32 @@ export const AgentConsoleScreen: React.FC<AgentConsoleScreenProps> = ({
                 </div>
               </div>
 
-              {/* Structured Tabs */}
-              <div style={{ display: 'flex', gap: '6px' }}>
+              {/* Structured Reasoning Tabs */}
+              <div className="reasoning-tab-strip">
                 <button
-                  className={`btn ${activeTab === 'DECISION' ? 'btn-outline-cyan' : 'btn-secondary'}`}
-                  style={{ fontSize: '10.5px', padding: '5px 11px' }}
+                  type="button"
+                  className={`reasoning-tab ${activeTab === 'DECISION' ? 'active' : ''}`}
                   onClick={() => handleTabChange('DECISION')}
                 >
-                  Why {decision?.recommended_strategy || 'Payment Link'}?
+                  Why {decision?.recommended_strategy || 'PAYMENT_LINK'}?
                 </button>
                 <button
-                  className={`btn ${activeTab === 'WHY_NOT' ? 'btn-outline-cyan' : 'btn-secondary'}`}
-                  style={{ fontSize: '10.5px', padding: '5px 11px' }}
+                  type="button"
+                  className={`reasoning-tab ${activeTab === 'WHY_NOT' ? 'active' : ''}`}
                   onClick={() => handleTabChange('WHY_NOT')}
                 >
-                  Why Not {decision?.recommended_strategy === 'PAYMENT_LINK' ? 'Retry' : 'Payment Link'}?
+                  Why Not Retry?
                 </button>
                 <button
-                  className={`btn ${activeTab === 'POLICY' ? 'btn-outline-cyan' : 'btn-secondary'}`}
-                  style={{ fontSize: '10.5px', padding: '5px 11px' }}
+                  type="button"
+                  className={`reasoning-tab ${activeTab === 'POLICY' ? 'active' : ''}`}
                   onClick={() => handleTabChange('POLICY')}
                 >
                   Policy Guardrails
                 </button>
                 <button
-                  className={`btn ${activeTab === 'EXECUTION' ? 'btn-outline-cyan' : 'btn-secondary'}`}
-                  style={{ fontSize: '10.5px', padding: '5px 11px' }}
+                  type="button"
+                  className={`reasoning-tab ${activeTab === 'EXECUTION' ? 'active' : ''}`}
                   onClick={() => handleTabChange('EXECUTION')}
                 >
                   Execution Audit

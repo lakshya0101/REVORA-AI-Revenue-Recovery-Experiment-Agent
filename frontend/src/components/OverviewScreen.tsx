@@ -101,7 +101,7 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--cyan-bright)', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'var(--font-mono)' }}>
-                  STAGE 2: PREDICTED / EXPECTED RECOVERY
+                  STAGE 2: EXPECTED RECOVERY
                 </span>
                 <span className="badge badge-cyan" style={{ fontSize: '9px' }}>PREDICTIVE</span>
               </div>
@@ -109,8 +109,13 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
                 {formatCurrency(expectedRecovery)}
               </div>
             </div>
-            <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', marginTop: '12px' }}>
-              Statistically calibrated recovery yield across all 4 machine learning strategies. <span style={{ color: 'var(--text-muted)' }}>Not recovered revenue.</span>
+            <div style={{ marginTop: '12px' }}>
+              <div style={{ fontSize: '11.5px', color: 'var(--cyan-bright)', fontWeight: '600', fontFamily: 'var(--font-mono)' }}>
+                Pre-execution estimate — not confirmed recovery
+              </div>
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                Statistically calibrated recovery yield across all 4 machine learning strategies.
+              </div>
             </div>
           </div>
 
@@ -129,22 +134,27 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--amber-bright)', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'var(--font-mono)' }}>
-                  STAGE 3: OBSERVED / SIMULATED YIELD
+                  STAGE 3: OBSERVED YIELD
                 </span>
-                <span className="badge badge-amber" style={{ fontSize: '9px' }}>SIMULATION</span>
+                <span className="badge badge-amber" style={{ fontSize: '9px' }}>OBSERVED · SIMULATED</span>
               </div>
               <div className="stat-jumbo" style={{ color: 'var(--amber-bright)' }}>
                 {formatCurrency(observedSimRecovery)}
               </div>
             </div>
-            <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', marginTop: '12px' }}>
-              <strong style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{learningSummary?.observed_cases || 2}</strong> observed simulated lifecycle test cases evaluated.
+            <div style={{ marginTop: '12px' }}>
+              <div style={{ fontSize: '11.5px', color: 'var(--amber-bright)', fontWeight: '600', fontFamily: 'var(--font-mono)' }}>
+                Simulation outcome
+              </div>
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                <strong style={{ color: '#fff', fontFamily: 'var(--font-mono)' }}>{learningSummary?.observed_cases || 2}</strong> observed simulated lifecycle test cases evaluated.
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Canonical Hero Opportunity Card (High-Impact Active Triage CTA) */}
+      {/* Canonical Transaction Card (High-Impact Active Triage CTA) */}
       <div
         className="os-card os-card-elevated"
         style={{
@@ -177,10 +187,10 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
               <span style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '0.1em', color: 'var(--cyan-bright)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
-                CANONICAL RECOVERY OPPORTUNITY
+                CANONICAL TRANSACTION
               </span>
               <span className="badge badge-cyan" style={{ fontSize: '9px' }}>
-                ACTIVE HERO
+                TXN REF: #0001
               </span>
             </div>
 
