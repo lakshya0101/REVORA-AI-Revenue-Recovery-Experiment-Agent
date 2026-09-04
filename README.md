@@ -10,6 +10,20 @@ REVORA detects revenue at risk, uses an ML decision engine to select a bounded r
 
 ---
 
+## 🎥 5-MINUTE DEMO // REVORA IN ACTION
+
+> **DETECT → DECIDE → POLICY → EXECUTE → OBSERVE → AUDIT → LEARN**
+
+A concise product walkthrough showing how REVORA moves from a failed payment to an AI-driven recovery decision, deterministic policy validation, safe Razorpay Test Mode execution, observed outcomes, and continuous learning.
+
+**[▶ WATCH THE FULL DEMO ON LOOM](https://www.loom.com/share/21b17f224b164374b232804cc017a54e)**
+
+`ML DECISION ENGINE` · `POLICY SENTRY` · `RAZORPAY TEST MODE` · `LLM EXPLANATION` · `AUDIT & LEARNING`
+
+> **Demo Safety:** Synthetic transactions, counterfactual evaluation, simulated outcomes, and Razorpay Test Mode only. No real-money transactions are conducted.
+
+---
+
 ## The Problem
 
 Payment failures in digital commerce represent significant revenue leakage. Traditional dunning and recovery mechanisms suffer from critical operational flaws:
