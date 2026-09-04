@@ -10,17 +10,23 @@ REVORA detects revenue at risk, uses an ML decision engine to select a bounded r
 
 ---
 
-## 🎥 5-MINUTE DEMO // REVORA IN ACTION
+## 5-MINUTE DEMO // REVORA IN ACTION
 
-> **DETECT → DECIDE → POLICY → EXECUTE → OBSERVE → AUDIT → LEARN**
+> **OPERATING PIPELINE**: `DETECT` → `DECIDE` → `POLICY` → `EXECUTE` → `OBSERVE` → `AUDIT` → `LEARN`
 
-A concise product walkthrough showing how REVORA moves from a failed payment to an AI-driven recovery decision, deterministic policy validation, safe Razorpay Test Mode execution, observed outcomes, and continuous learning.
+A complete 5-minute technical walkthrough demonstrating REVORA’s end-to-end recovery lifecycle — from ML-driven intervention selection and deterministic policy enforcement to safe Razorpay Test Mode execution, explainable AI audits, and closed-loop calibration.
 
-**[▶ WATCH THE FULL DEMO ON LOOM](https://www.loom.com/share/21b17f224b164374b232804cc017a54e)**
+**[▶ WATCH THE FULL 5-MINUTE DEMO ON LOOM](https://www.loom.com/share/21b17f224b164374b232804cc017a54e)**
 
-`ML DECISION ENGINE` · `POLICY SENTRY` · `RAZORPAY TEST MODE` · `LLM EXPLANATION` · `AUDIT & LEARNING`
+| Demonstration Phase | Core Architecture & Modules Showcased |
+| :--- | :--- |
+| **1. Failure Detection & ML Scoring** | Ingestion of failed payment context, feature isolation, and dual-model strategy prediction (`RandomForestClassifier` + `RandomForestRegressor`). |
+| **2. Policy Sentry Validation** | Deterministic financial safety guardrails (velocity caps, attempt thresholds, amount ceilings) enforcing hard policy overrides. |
+| **3. Razorpay Test Mode Execution** | Idempotent generation and dispatch of Razorpay Test Mode Payment Links via REST API integration. |
+| **4. Explainability & Audit Trail** | Gemini LLM translating ML feature proofs into human-readable merchant rationales; binding decisions to immutable SQLite audit snapshots. |
+| **5. Closed-Loop Learning** | Observation of simulated post-execution outcome feeds, audit recording, and continuous Brier score calibration monitoring. |
 
-> **Demo Safety:** Synthetic transactions, counterfactual evaluation, simulated outcomes, and Razorpay Test Mode only. No real-money transactions are conducted.
+> **Demo Safety & Test Mode Semantics**: All workflows shown execute strictly in **Razorpay Test Mode** with synthetic transaction corpora and simulated outcome feeds. No real-money transactions are conducted.
 
 ---
 
