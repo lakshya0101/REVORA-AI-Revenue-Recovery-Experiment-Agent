@@ -218,10 +218,10 @@ All metrics below are derived directly from the repository's held-out test suite
 | **Macro F1 Score** | 0.2840 | **0.8820** | **+0.5980** |
 | **Macro Precision** | 0.4500 | **0.9003** | **+0.4503** |
 | **Macro Recall** | 0.2500 | **0.8688** | **+0.6188** |
-| **Probability Calibration MAE** | 0.3120 | **0.0946** | **69.68% error reduction** |
-| **Probability Calibration RMSE** | 0.3840 | **0.1321** | **65.60% error reduction** |
+| **Probability Calibration MAE** | 0.3120 | **0.0948** | **69.62% error reduction** |
+| **Probability Calibration RMSE** | 0.3840 | **0.1322** | **65.57% error reduction** |
 | **Held-Out Revenue at Risk** | ₹22,16,075.23 | ₹22,16,075.23 | — |
-| **Predicted Expected Recovery** | ₹9,97,233.85 | **₹11,05,796.89** | **+₹1,08,563.04 (+10.89%)** |
+| **Predicted Expected Recovery** | ₹9,97,233.85 | **₹11,04,393.63** | **+₹1,07,159.78 (+10.75%)** |
 
 ### Counterfactual Experiment Simulation (100-Case Sample, Seed 42)
 
@@ -320,7 +320,44 @@ REVORA/
 
 ---
 
+## Docker Deployment
+
+REVORA can be run as a production-style containerized deployment using Docker Compose:
+
+```bash
+docker compose build
+docker compose up -d
+```
+
+Inspect running containers:
+```bash
+docker compose ps
+```
+
+### Endpoints
+- **Frontend**: [http://localhost:5173](http://localhost:5173)
+- **Backend API**: [http://localhost:8000](http://localhost:8000)
+- **Backend health**: [http://localhost:8000/health](http://localhost:8000/health)
+- **API documentation**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+### Container Architecture
+
+```text
+Browser → Nginx frontend container → FastAPI backend container → REVORA services / SQLite
+```
+
+- **Frontend Serving & Reverse Proxy**: The frontend is served through Nginx, which proxies all `/api/*` requests to the FastAPI backend.
+- **Backend & Persistence**: The backend uses SQLite. Docker Compose persists the SQLite database through the named `revora_db_data` volume mounted at `/app/data`.
+- **Healthcheck & Startup Ordering**: The backend healthcheck is used by Docker Compose so the frontend starts only after the backend is healthy.
+- **Configuration**: Razorpay credentials and optional Gemini configuration are supplied through environment variables (`.env`) and are not hardcoded.
+- **Safety Semantics**: The Docker deployment remains strictly Razorpay Test Mode / simulation-safe, consistent with the existing safety disclaimer.
+
+---
+
 ## Getting Started
+
+> [!TIP]
+> To run the complete application as a containerized stack, refer to the [Docker Deployment](#docker-deployment) section above. The instructions below describe local development setup with hot reload.
 
 ### 1. Prerequisites
 - **Python 3.11+**
@@ -409,10 +446,10 @@ python verify_learning_loop.py
 
 Follow this 10-step sequence to review REVORA during judging:
 
-1. **Overview Dashboard**: View the aggregate health metrics, total revenue at risk (₹1.28 Cr), predicted expected recovery (₹11.05 L), and the Decision Engine Performance benchmark showing **+44 pp accuracy lift** over baseline.
+1. **Overview Dashboard**: View the aggregate health metrics, total revenue at risk (₹1.28 Cr), predicted expected recovery (₹11,04,393.63), and the Decision Engine Performance benchmark showing **+44 pp accuracy lift** over baseline.
 2. **Recovery Queue**: Open the Queue to see failed transactions categorized by failure reason, customer tier, and predicted strategy.
 3. **Select Canonical Transaction**: Click on `txn_syn_0001` (Amount: ₹191.25, Failure: `INCORRECT_OTP`, Customer: `FIRST_TIME`).
-4. **Agent Console — ML Evidence**: Inspect the 88.85% strategy confidence, 43.53% predicted recovery probability, and ₹83.25 expected recovery yield.
+4. **Agent Console — ML Evidence**: Inspect the 88.85% strategy confidence, 43.53% predicted recovery probability, and ₹83.24 expected recovery yield.
 5. **Policy Sentry**: Confirm that deterministic merchant guardrails evaluate the transaction as `ALLOWED` (within amount and attempt limits).
 6. **LLM Rationale**: Read the natural language decision breakdown and use the "Why Not?" comparator to see why `RETRY` was rejected in favor of `PAYMENT_LINK`.
 7. **Test Mode Execution**: Click **Execute Recovery (Test Mode)** to verify idempotent Razorpay Test Payment Link creation (`plink_TXL41IU5yugX64`).
@@ -426,3 +463,11 @@ Follow this 10-step sequence to review REVORA during judging:
 
 > [!NOTE]
 > REVORA is a hackathon prototype operating with synthetic data, counterfactual evaluation, simulated outcomes, and Razorpay Test Mode. Predictive or expected recovery values are mathematical estimates and must not be interpreted as confirmed production revenue recovery. No real-money financial transactions are conducted.
+
+---
+
+### Built for Razorpay AI Buildathon 2026
+**REVORA — AI Revenue Recovery Experiment Agent**  
+Designed and developed by Lakshya Dogra.  
+© 2026 Lakshya Dogra. All rights reserved.  
+*Built as an AI revenue recovery prototype for the Razorpay AI Buildathon 2026.*
