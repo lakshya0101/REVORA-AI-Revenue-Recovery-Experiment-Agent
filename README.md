@@ -6,7 +6,7 @@
 REVORA detects revenue at risk, uses an ML decision engine to select a bounded recovery intervention, passes that decision through an authoritative policy layer, safely executes the intervention in Razorpay Test Mode, observes the outcome, audits the decision chain, and feeds observed outcomes into a learning/calibration loop.
 
 > [!IMPORTANT]
-> **Safety & Test Mode Semantics**: REVORA operates strictly in **Razorpay Test Mode** with synthetic datasets, counterfactual simulation, and simulated outcome observation. **No real-money transactions are performed.** All predictive or expected recovery values are mathematical estimates ($\text{Amount} \times P(\text{Recovery})$) and must not be interpreted as confirmed production revenue.
+> **Safety & Test Mode Semantics**: REVORA operates strictly in **Razorpay Test Mode** with synthetic datasets, counterfactual simulation, and simulated outcome observation. **No real-money transactions are performed.** All predictive or expected recovery values are mathematical estimates (**Amount × P(Recovery)**) and must not be interpreted as confirmed production revenue.
 
 ---
 
