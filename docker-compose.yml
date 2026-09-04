@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: revora-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID:-}
+      - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET:-}
+      - LLM_PROVIDER=${LLM_PROVIDER:-deterministic}
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - APP_ENV=${APP_ENV:-production}
+      - DEBUG=${DEBUG:-false}
+      - DATABASE_URL=sqlite:///./data/revora.db
+    volumes:
+      - revora_db_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: revora-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  revora_db_data:
+    name: revora_db_data
